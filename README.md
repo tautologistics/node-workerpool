@@ -7,10 +7,12 @@ In this example (available in the repo as example-master.js and example-slave.js
 
 ###Worker Pool
 The first thing to do is include the workerpool module:
+
 	var sys = require("sys");
 	var workerpool = require("./workerpool");
 	
 Next, an instance of the workerpool is created. The first argument is the filename of the script to run in the workers, the second parameter is an optional set of settings that tell the worker pool how to behave.
+
 	var maths = new workerpool.WorkerPool("example-slave.js", {
 			  timeout: 2000
 			, minWorkers: 1
@@ -19,12 +21,14 @@ Next, an instance of the workerpool is created. The first argument is the filena
 		});
 
 The optional settings for the worker pool are:
- * timeout - Milliseconds the worker job is allowed run. If a job takes longer, the worker is killed. For no timeout, use 0 or null
- * minWorkers - Minimum number of concurrent workers to maintain
- * maxWorkers - Maximum number of concurrent workers to maintain
- * poolTimeout - Frequency with which the worker pool should see if there are unused workers that can be killed off
+
+* timeout - Milliseconds the worker job is allowed run. If a job takes longer, the worker is killed. For no timeout, use 0 or null
+* minWorkers - Minimum number of concurrent workers to maintain
+* maxWorkers - Maximum number of concurrent workers to maintain
+* poolTimeout - Frequency with which the worker pool should see if there are unused workers that can be killed off
 
 Finally, we create a set of jobs to run. The key here is the "addJob()" method; the first parameter is the action the worker should perform, next is the data to be passed to the worker, the third parameter is the callback for when the job completes, and the final parameter is the optional job key. A job key allows duplicate jobs to be collapsed into a single running worker while still triggering all the callbacks when the worker completes. An example where job keys would be useful is with a worker pool that fetches URLs; by using the URL as the job key, concurrent requests for a URL will result in only one worker.
+
 	[
 		  { action: "add", data: { op1: 1, op2: 2 }, key: "1+2" }
 		, { action: "sub", data: { op1: 2, op2: 10 }, key: "2-10" }
@@ -45,10 +49,12 @@ Finally, we create a set of jobs to run. The key here is the "addJob()" method; 
 
 ###Worker
 The first thing to do is include the workerpool module:
+
 	var sys = require("sys");
 	var workerpool = require("./workerpool");
 
 The next step is to create a worker that will listen for job requests. The worker gets passed a handler, which will be called with the action to perform and the data to perform the action on. When the handler has a result to return, it calls saveResult() and if there's an error it calls saveError(). When the handler is complete, it then calls jobDone().
+
 	var maths = new workerpool.Worker(function (action, data) {
 		var self = this;
 		var funcDone = function() {
