@@ -11,13 +11,19 @@ The first thing to do is include the workerpool module:
 	var workerpool = require("./workerpool");
 	
 Next, an instance of the workerpool is created. The first argument is the filename of the script to run in the workers, the second parameter is an optional set of settings that tell the worker pool how to behave.
-	var maths = new workerpool.WorkerPool("example-slave.js", { timeout: 2000, minWorkers: 1, maxWorkers: 5, poolTimeout: 60000 });
+	var maths = new workerpool.WorkerPool("example-slave.js", {
+			  timeout: 2000
+			, minWorkers: 1
+			, maxWorkers: 5
+			, poolTimeout: 60000
+		});
 
-timeout - Milliseconds the worker job is allowed run. If a job takes longer, the worker is killed. For no timeout, use 0 or null
-minWorkers - Minimum number of concurrent workers to maintain
-maxWorkers - Maximum number of concurrent workers to maintain
-poolTimeout - Frequency with which the worker pool should see if there are unused workers that can be killed off
-	
+The optional settings for the worker pool are:
+* timeout - Milliseconds the worker job is allowed run. If a job takes longer, the worker is killed. For no timeout, use 0 or null
+* minWorkers - Minimum number of concurrent workers to maintain
+* maxWorkers - Maximum number of concurrent workers to maintain
+* poolTimeout - Frequency with which the worker pool should see if there are unused workers that can be killed off
+
 Finally, we create a set of jobs to run. The key here is the "addJob()" method; the first parameter is the action the worker should perform, next is the data to be passed to the worker, the third parameter is the callback for when the job completes, and the final parameter is the optional job key. A job key allows duplicate jobs to be collapsed into a single running worker while still triggering all the callbacks when the worker completes. An example where job keys would be useful is with a worker pool that fetches URLs; by using the URL as the job key, concurrent requests for a URL will result in only one worker.
 	[
 		  { action: "add", data: { op1: 1, op2: 2 }, key: "1+2" }
@@ -26,12 +32,13 @@ Finally, we create a set of jobs to run. The key here is the "addJob()" method; 
 		, { action: "div", data: { op1: 5, op2: 0.3 }, key: "5/0.3" }
 		, { action: "foo", data: { op1: 2, op2: 3 }, key: "2?3" }
 	].forEach( function (item, index, list) {
+		var action = item.action + "(" + item.data.op1 + ", " + item.data.op2 + ")"
 		for (var i = 0; i < 10; i++)
 			maths.addJob(item.action, { op1: item.data.op1, op2: item.data.op2 }, function (err, result) {
 				if (err) {
-					sys.puts("Error [" + item.action + "(" + item.data.op1 + ", " + item.data.op2 + ")]: " + sys.inspect(err, false, null));
+					sys.puts("Error [" + action + "]: " + sys.inspect(err, false, null));
 				} else {
-					sys.puts("Result [" + item.action + "(" + item.data.op1 + ", " + item.data.op2 + ")]: " + sys.inspect(result, false, null));
+					sys.puts("Result [" + action + "]: " + sys.inspect(result, false, null));
 				}
 			}, item.key);
 	});
