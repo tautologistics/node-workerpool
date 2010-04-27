@@ -19,10 +19,10 @@ Next, an instance of the workerpool is created. The first argument is the filena
 		});
 
 The optional settings for the worker pool are:
-* timeout - Milliseconds the worker job is allowed run. If a job takes longer, the worker is killed. For no timeout, use 0 or null
-* minWorkers - Minimum number of concurrent workers to maintain
-* maxWorkers - Maximum number of concurrent workers to maintain
-* poolTimeout - Frequency with which the worker pool should see if there are unused workers that can be killed off
+ * timeout - Milliseconds the worker job is allowed run. If a job takes longer, the worker is killed. For no timeout, use 0 or null
+ * minWorkers - Minimum number of concurrent workers to maintain
+ * maxWorkers - Maximum number of concurrent workers to maintain
+ * poolTimeout - Frequency with which the worker pool should see if there are unused workers that can be killed off
 
 Finally, we create a set of jobs to run. The key here is the "addJob()" method; the first parameter is the action the worker should perform, next is the data to be passed to the worker, the third parameter is the callback for when the job completes, and the final parameter is the optional job key. A job key allows duplicate jobs to be collapsed into a single running worker while still triggering all the callbacks when the worker completes. An example where job keys would be useful is with a worker pool that fetches URLs; by using the URL as the job key, concurrent requests for a URL will result in only one worker.
 	[
